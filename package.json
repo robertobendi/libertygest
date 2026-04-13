@@ -1,0 +1,26 @@
+{
+  "name": "libertygest",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "lint": "turbo lint",
+    "dev:admin": "turbo dev --filter=@libertygest/admin",
+    "dev:web": "turbo dev --filter=@libertygest/web",
+    "db:generate": "turbo db:generate --filter=@libertygest/db",
+    "db:migrate": "turbo db:migrate --filter=@libertygest/db",
+    "db:studio": "turbo db:studio --filter=@libertygest/db"
+  },
+  "devDependencies": {
+    "turbo": "^2",
+    "typescript": "^5.7"
+  },
+  "packageManager": "npm@10.9.2",
+  "engines": {
+    "node": ">=22"
+  }
+}
