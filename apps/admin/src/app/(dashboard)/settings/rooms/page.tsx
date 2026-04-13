@@ -4,7 +4,6 @@ import * as React from "react"
 import { PlusIcon, PencilIcon, TrashIcon, ArrowUpDownIcon } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import {

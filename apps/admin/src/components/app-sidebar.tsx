@@ -51,7 +51,7 @@ const navItems: NavItem[] = [
   {
     title: "Piano Camere",
     icon: BedDouble,
-    href: "/",
+    href: "/room-plan",
   },
   {
     title: "Calendario",

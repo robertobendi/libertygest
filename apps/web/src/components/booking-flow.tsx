@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,6 +32,23 @@ interface BookingData {
   phone: string;
   nationality: string;
   requests: string;
+}
+
+function parseBookingSearchParams(searchParams: {
+  get(name: string): string | null;
+}): Partial<BookingData> {
+  const updates: Partial<BookingData> = {};
+  const checkin = searchParams.get("checkin");
+  const checkout = searchParams.get("checkout");
+  const adults = searchParams.get("adults");
+  const children = searchParams.get("children");
+  const camera = searchParams.get("camera");
+  if (checkin) updates.checkIn = new Date(checkin);
+  if (checkout) updates.checkOut = new Date(checkout);
+  if (adults) updates.adults = parseInt(adults, 10);
+  if (children) updates.children = parseInt(children, 10);
+  if (camera) updates.selectedRoom = camera;
+  return updates;
 }
 
 const availableRooms = [
@@ -566,11 +583,13 @@ function Step4({
   onBack,
   onConfirm,
   confirmed,
+  confirmationCode,
 }: {
   data: BookingData;
   onBack: () => void;
   onConfirm: () => void;
   confirmed: boolean;
+  confirmationCode: string | null;
 }) {
   const room = availableRooms.find((r) => r.id === data.selectedRoom);
   const numNights = nights(data.checkIn, data.checkOut);
@@ -599,7 +618,7 @@ function Step4({
               Numero Prenotazione
             </p>
             <p className="text-2xl font-bold text-[#1e3a5f] mt-1">
-              HB-{Math.floor(100000 + Math.random() * 900000)}
+              {confirmationCode ?? "—"}
             </p>
           </div>
           <div className="space-y-2 text-sm">
@@ -772,8 +791,9 @@ function BookingFlowInner() {
   const searchParams = useSearchParams();
   const [step, setStep] = useState(1);
   const [confirmed, setConfirmed] = useState(false);
+  const [confirmationCode, setConfirmationCode] = useState<string | null>(null);
 
-  const [data, setData] = useState<BookingData>({
+  const [data, setData] = useState<BookingData>(() => ({
     adults: 2,
     children: 0,
     firstName: "",
@@ -782,28 +802,8 @@ function BookingFlowInner() {
     phone: "",
     nationality: "",
     requests: "",
-  });
-
-  // Pre-fill from URL params
-  useEffect(() => {
-    const checkin = searchParams.get("checkin");
-    const checkout = searchParams.get("checkout");
-    const adults = searchParams.get("adults");
-    const children = searchParams.get("children");
-    const camera = searchParams.get("camera");
-
-    const updates: Partial<BookingData> = {};
-    if (checkin) updates.checkIn = new Date(checkin);
-    if (checkout) updates.checkOut = new Date(checkout);
-    if (adults) updates.adults = parseInt(adults);
-    if (children) updates.children = parseInt(children);
-    if (camera) {
-      updates.selectedRoom = camera;
-    }
-    if (Object.keys(updates).length > 0) {
-      setData((prev) => ({ ...prev, ...updates }));
-    }
-  }, [searchParams]);
+    ...parseBookingSearchParams(searchParams),
+  }));
 
   const update = (updates: Partial<BookingData>) => {
     setData((prev) => ({ ...prev, ...updates }));
@@ -840,12 +840,23 @@ function BookingFlowInner() {
         <Step4
           data={data}
           onBack={() => setStep(3)}
-          onConfirm={() => setConfirmed(true)}
+          onConfirm={() => {
+            setConfirmationCode(
+              `HB-${Math.floor(100000 + Math.random() * 900000)}`
+            );
+            setConfirmed(true);
+          }}
           confirmed={confirmed}
+          confirmationCode={confirmationCode}
         />
       )}
     </div>
   );
+}
+
+function BookingFlowKeyed() {
+  const searchParams = useSearchParams();
+  return <BookingFlowInner key={searchParams.toString()} />;
 }
 
 export function BookingFlow() {
@@ -855,7 +866,7 @@ export function BookingFlow() {
         <div className="text-gray-400">Caricamento...</div>
       </div>
     }>
-      <BookingFlowInner />
+      <BookingFlowKeyed />
     </Suspense>
   );
 }

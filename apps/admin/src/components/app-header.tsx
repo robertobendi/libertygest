@@ -33,7 +33,7 @@ import { Separator } from "@/components/ui/separator";
 
 const routeLabels: Record<string, string> = {
   "/dashboard": "Dashboard",
-  "/": "Piano Camere",
+  "/room-plan": "Piano Camere",
   "/calendar": "Calendario",
   "/reservations/new": "Nuova Prenotazione",
   "/reservations": "Elenco Prenotazioni",
@@ -62,6 +62,8 @@ const routeLabels: Record<string, string> = {
   "/settings/rooms": "Camere",
   "/settings/users": "Utenti",
   "/settings/content": "Contenuti",
+  "/login": "Accedi",
+  "/forgot-password": "Password dimenticata",
 };
 
 export function AppHeader() {
